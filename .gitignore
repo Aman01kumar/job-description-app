@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
 # Ignore all CSV and JSON files in data/
 data/*.csv
 data/*.json
@@ -9,3 +10,9 @@ data/*.json
 # But keep these ones
 !data/jobs.csv
 !data/jobs.json
+
+# Ignore all files in resume/
+resume/*
+
+# But keep PDF resumes
+!resume/*.pdf
