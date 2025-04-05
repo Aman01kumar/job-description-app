@@ -20,12 +20,12 @@ job_file = st.file_uploader("Upload Job Description", type=["txt", "pdf"])
 
 # --- Use resumes from a local folder ---
 st.subheader("Step 2: Matching Against Resume Folder")
-resume_folder_path = "resumes"  # Update this to the actual folder path with resumes
+resume_folder_path = "resume"  # ✅ make sure this matches your folder name
 
 if st.button("🔍 Match Best Resume") and job_file:
     with st.spinner("Processing..."):
 
-        # Save job description to temp and extract text
+        # Save uploaded job description file
         job_path = save_uploaded_file(job_file)
         if job_file.name.endswith('.pdf'):
             job_text = extract_text_from_pdf(job_path)
@@ -33,16 +33,29 @@ if st.button("🔍 Match Best Resume") and job_file:
             with open(job_path, 'r', encoding='utf-8') as f:
                 job_text = f.read()
 
-        # Make sure resume folder exists
-        if not os.path.exists(resume_folder_path) or not os.listdir(resume_folder_path):
-            st.error(f"❌ Resume folder not found or is empty: `{resume_folder_path}`")
+        # Check if resume folder exists and is not empty
+        if not os.path.exists(resume_folder_path):
+            st.error(f"❌ Folder `{resume_folder_path}` not found. Please make sure it exists.")
+        elif not os.listdir(resume_folder_path):
+            st.error(f"❌ Folder `{resume_folder_path}` is empty. Please add resumes to it.")
         else:
-            # Match best resume from the folder
+            # Match best resume from folder
             best_resume_path, score = match_resume_to_job(job_text, resume_folder_path)
 
             if best_resume_path:
                 best_resume_name = os.path.basename(best_resume_path)
                 st.success(f"✅ Best Matching Resume: **{best_resume_name}**")
                 st.info(f"🧠 Similarity Score: **{score:.2f}**")
+
+                # 👀 Show resume preview
+                st.subheader("📄 Resume Preview")
+                if best_resume_path.endswith(".pdf"):
+                    resume_text = extract_text_from_pdf(best_resume_path)
+                else:
+                    with open(best_resume_path, "r", encoding="utf-8") as f:
+                        resume_text = f.read()
+
+                st.text_area("Resume Content", resume_text, height=400)
+
             else:
-                st.warning("No matching resume found.")
+                st.warning("⚠️ No matching resume found.")
