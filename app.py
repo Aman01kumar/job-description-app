@@ -3,6 +3,7 @@ import json
 import os
 from io import StringIO
 
+st.set_page_config(page_title="Job Descriptions Browser", page_icon="📋")
 # Full raw TSV-formatted job data
 raw_data = """
 Job Title\tJob Description
