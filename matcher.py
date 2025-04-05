@@ -1,5 +1,5 @@
 # matcher.py
-
+import os
 import pandas as pd
 import json
 
@@ -28,4 +28,10 @@ if __name__ == "__main__":
     jobs = parse_job_data(raw_text)
     save_data(jobs)
     print("✅ Job data saved to CSV and JSON.")
+    
+    
+    def load_jobs(csv_path="data/jobs.csv"):
+        if not os.path.exists(csv_path):
+            raise FileNotFoundError(f"📁 File not found: {csv_path}. Make sure it's in your GitHub repo.")
+        return pd.read_csv(csv_path)
 
