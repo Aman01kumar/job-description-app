@@ -20,3 +20,12 @@ def save_data(jobs, csv_path='data/job_data.csv', json_path='data/job_data.json'
 
 def load_jobs(csv_path='data/job_data.csv'):
     return pd.read_csv(csv_path)
+
+if __name__ == "__main__":
+    with open("data/raw_data.txt", "r", encoding="utf-8") as f:
+        raw_text = f.read()
+
+    jobs = parse_job_data(raw_text)
+    save_data(jobs)
+    print("✅ Job data saved to CSV and JSON.")
+
