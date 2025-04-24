@@ -2,7 +2,10 @@
 import os
 import pandas as pd
 import json
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
+# --- Parsing and Saving Job Data ---
 def parse_job_data(raw_text):
     lines = raw_text.strip().split('\n')
     jobs = []
@@ -18,9 +21,19 @@ def save_data(jobs, csv_path='data/job_data.csv', json_path='data/job_data.json'
     with open(json_path, 'w') as f:
         json.dump(jobs, f, indent=2)
 
-def load_jobs(csv_path='data/job_data.csv'):
+def load_jobs(csv_path="data/job_data.csv"):
+    if not os.path.exists(csv_path):
+        raise FileNotFoundError(f"📁 File not found: {csv_path}. Make sure it's in your GitHub repo.")
     return pd.read_csv(csv_path)
 
+# --- Similarity Computation ---
+def compute_similarity(text1, text2):
+    vectorizer = TfidfVectorizer()
+    tfidf_matrix = vectorizer.fit_transform([text1, text2])
+    similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])
+    return similarity[0][0]
+
+# --- CLI Execution ---
 if __name__ == "__main__":
     with open("data/raw_data.txt", "r", encoding="utf-8") as f:
         raw_text = f.read()
@@ -28,19 +41,3 @@ if __name__ == "__main__":
     jobs = parse_job_data(raw_text)
     save_data(jobs)
     print("✅ Job data saved to CSV and JSON.")
-    
-    
-    def load_jobs(csv_path="data/jobs.csv"):
-        if not os.path.exists(csv_path):
-            raise FileNotFoundError(f"📁 File not found: {csv_path}. Make sure it's in your GitHub repo.")
-        return pd.read_csv(csv_path)
-
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
-def compute_similarity(text1, text2):
-    vectorizer = TfidfVectorizer()
-    tfidf_matrix = vectorizer.fit_transform([text1, text2])
-    similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])
-    return similarity[0][0]
-
